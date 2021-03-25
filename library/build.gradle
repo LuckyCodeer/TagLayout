@@ -8,7 +8,7 @@ publish {
     groupId = 'com.yhw.library'
     artifactId = 'taglayout'
     publishVersion = '1.0.0'
-    repoName="TabLayout"
+    repoName="TagLayout"
     desc = 'Android TagLayout'
     website = 'https://github.com/LuckyCodeer/TagLayout'
 }
