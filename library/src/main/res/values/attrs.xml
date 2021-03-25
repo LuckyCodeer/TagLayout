@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TagLayout">
+        <attr name="choiceMode" format="enum">
+            <!--不能选中-->
+            <enum name="none" value="0" />
+            <!-- 单选 -->
+            <enum name="singleChoice" value="1" />
+            <!-- 多选 -->
+            <enum name="multipleChoice" value="2" />
+        </attr>
+
+        <!--单选时默认选择项-->
+        <attr name="defaultChoicePosition" format="integer"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <com.yhw.taglayout.TagLayout
+        android:id="@+id/tag_layout_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:choiceMode="singleChoice">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:text="正常" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:text="单选" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:text="多选" />
+    </com.yhw.taglayout.TagLayout>
+
+    <com.yhw.taglayout.TagLayout
+        android:id="@+id/tag_layout_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:defaultChoicePosition="0"
+        app:choiceMode="none" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:id="@+id/btn_get_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取选中项"/>
+
+    </LinearLayout>
+
+</LinearLayout>
