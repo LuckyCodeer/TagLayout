@@ -50,8 +50,8 @@ implementation 'com.yhw.library:taglayout:1.0.1'
 ```
 
 ##### 布局属性
-*app:defaultChoicePosition="0" //单选时默认选中项*
-*app:choiceMode="none" //设置选择模式，支持单选(singleChoice)和多选(multipleChoice) 默认(none)表示不设置选择模式*
+1. app:defaultChoicePosition="0" //单选时默认选中项
+2. app:choiceMode="none" //设置选择模式，支持单选(singleChoice)和多选(multipleChoice) 默认(none)表示不设置选择模式
 
 
 #### 动态添加数据
