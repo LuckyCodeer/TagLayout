@@ -85,7 +85,7 @@ class TagLayout : ViewGroup {
                     if (i in 0 until childCount && i == defChoicePosition)
                         childView.isSelected = true
                 }
-                if(childView.background == null){
+                if (childView.background == null) {
                     childView.setBackgroundResource(R.drawable.tag_selector_bg)
                 }
                 mChildViewList.add(childView)
@@ -146,6 +146,9 @@ class TagLayout : ViewGroup {
         }
     }
 
+    /**
+     * 改变选中
+     */
     private fun changedCheckedItemView(position: Int) {
         Log.i(TAG, "choiceMode is $choiceMode")
         for ((index, view) in mChildViewList.withIndex()) {
@@ -185,6 +188,58 @@ class TagLayout : ViewGroup {
         return defChoicePosition
     }
 
+    /**
+     * 设置数据适配器
+     */
+    fun setAdapter(adapter: TagAdapter) {
+        mAdapter = adapter
+        changedAdapter()
+    }
+
+    private fun changedAdapter() {
+        removeAllViews()
+        for (i in 0 until mAdapter.getItemCount()) {
+            val itemView = mAdapter.onCreateView(this)
+            mAdapter.onBindView(itemView, i)
+            addView(itemView)
+        }
+    }
+
+    fun getAdapter(): TagAdapter {
+        return mAdapter
+    }
+
+    /**
+     * 设置选择模式
+     * @see ChoiceMode
+     */
+    fun setChoiceMode(mode: ChoiceMode) {
+        this.choiceMode = mode.choiceMode
+        if (mode.choiceMode == ChoiceMode.SingleChoice.choiceMode) {
+            defChoicePosition = 0
+            changedCheckedItemView(defChoicePosition)
+            if (onSingleCheckedChangeListener != null) {
+                onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
+            }
+        } else {
+            changedCheckedItemView(-1)
+        }
+    }
+
+    /**
+     * 单选模式下，设置默认选择项
+     */
+    fun setDefaultChoicePosition(position: Int) {
+        this.defChoicePosition = position
+        if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
+            changedCheckedItemView(defChoicePosition)
+        }
+    }
+
+    fun getChoiceMode(): Int {
+        return choiceMode
+    }
+
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         return MarginLayoutParams(context, attrs)
     }
@@ -213,48 +268,20 @@ class TagLayout : ViewGroup {
         fun onCheckedChanged(positionList: MutableList<Int>)
     }
 
-    fun setAdapter(adapter: TagAdapter) {
-        mAdapter = adapter
-        removeAllViews()
-        Log.i(TAG, "count ${mAdapter.getItemCount()}")
-        for (i in 0 until mAdapter.getItemCount()) {
-            val itemView = mAdapter.onCreateView(this)
-            mAdapter.onBindView(itemView, i)
-            addView(itemView)
-        }
-    }
-
-    fun getAdapter(): TagAdapter {
-        return mAdapter
-    }
-
-    fun setChoiceMode(mode: ChoiceMode) {
-        this.choiceMode = mode.choiceMode
-        if (mode.choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-            defChoicePosition = 0
-            changedCheckedItemView(defChoicePosition)
-            if (onSingleCheckedChangeListener != null) {
-                onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
-            }
-        } else {
-            changedCheckedItemView(-1)
-        }
-    }
-
-    fun setDefaultChoicePosition(position: Int) {
-        this.defChoicePosition = position
-        if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-            changedCheckedItemView(defChoicePosition)
-        }
-    }
-
-    fun getChoiceMode(): Int {
-        return choiceMode
-    }
-
     enum class ChoiceMode(var choiceMode: Int) {
+        /**
+         * 非选择模式
+         */
         None(0),
+
+        /**
+         * 单选模式
+         */
         SingleChoice(1),
+
+        /**
+         * 多选模式
+         */
         MultipleChoice(2);
     }
 }

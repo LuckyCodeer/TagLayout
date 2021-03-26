@@ -7,7 +7,7 @@ publish {
     userOrg = 'yanghongwei'
     groupId = 'com.yhw.library'
     artifactId = 'taglayout'
-    publishVersion = '1.0.0'
+    publishVersion = '1.0.1'
     repoName="TagLayout"
     desc = 'Android TagLayout'
     website = 'https://github.com/LuckyCodeer/TagLayout'

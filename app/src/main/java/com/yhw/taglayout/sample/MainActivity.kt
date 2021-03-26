@@ -65,12 +65,20 @@ class MainActivity : AppCompatActivity() {
             }
 
         //获取选中项
-        getIndexBtn.setOnClickListener{
-            if(tagLayout2.getChoiceMode() == TagLayout.ChoiceMode.SingleChoice.choiceMode){
-                Toast.makeText(this@MainActivity, "单选了 ${tagLayout2.getCheckedPosition()}", Toast.LENGTH_SHORT).show()
-            }else if(tagLayout2.getChoiceMode() == TagLayout.ChoiceMode.MultipleChoice.choiceMode){
-                Toast.makeText(this@MainActivity, "多选了 ${tagLayout2.getCheckedList()}", Toast.LENGTH_SHORT).show()
-            }else{
+        getIndexBtn.setOnClickListener {
+            if (tagLayout2.getChoiceMode() == TagLayout.ChoiceMode.SingleChoice.choiceMode) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "单选了 ${tagLayout2.getCheckedPosition()}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else if (tagLayout2.getChoiceMode() == TagLayout.ChoiceMode.MultipleChoice.choiceMode) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "多选了 ${tagLayout2.getCheckedList()}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
                 Toast.makeText(this@MainActivity, "非选中模式，不能获取", Toast.LENGTH_SHORT).show()
             }
         }
