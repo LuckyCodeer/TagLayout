@@ -4,7 +4,16 @@ Android上的标签布局、流式布局，支持单选、多选等操作
 ### 引入依赖
 
 ```kotlin
-implementation 'com.yhw.library:taglayout:1.0.1'
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+dependencies {
+	        implementation 'com.github.LuckyCodeer:TagLayout:V1.0.1'
+	}
 ```
 
 ### 使用方法
