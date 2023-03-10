@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -77,6 +78,15 @@ class ListActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.textView.text = list[position].name
             holder.tagLayout.setAdapter(MyTagAdapter(list[position].tagList))
+            holder.itemView.setOnClickListener {
+                Toast.makeText(holder.itemView.context, "" + position, Toast.LENGTH_SHORT).show()
+            }
+            /*holder.tagLayout.onItemClickListener = object : TagLayout.OnItemClickListener {
+                override fun onItemClick(position: Int, view: View) {
+                    Toast.makeText(holder.itemView.context, "点击了标签$position", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }*/
         }
 
     }
@@ -93,6 +103,7 @@ class ListActivity : AppCompatActivity() {
         }
 
         override fun onBindView(itemView: View, position: Int) {
+            itemView.setBackgroundResource(R.drawable.tag_normal_bg)
             val textView: TextView = itemView.findViewById(R.id.tv_title)
             textView.text = dataList[position]
         }

@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import kotlin.math.max
 
@@ -13,6 +14,7 @@ private const val TAG = "TagLayout"
 
 /**
  * 标签布局
+ * @author yhw
  */
 class TagLayout : ViewGroup {
     private val mViewRectList = mutableListOf<Rect>()
@@ -82,8 +84,6 @@ class TagLayout : ViewGroup {
             }
 
             if (!mChildViewList.contains(childView)) {
-                childView.isClickable = true
-                childView.isFocusable = true
                 if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
                     if (i in 0 until childCount && i == defChoicePosition)
                         childView.isSelected = true
@@ -101,28 +101,34 @@ class TagLayout : ViewGroup {
                 )
                 mViewRectList.add(rect)
 
-                childView.setOnClickListener {
-                    changedCheckedItemView(i)
-                    if (onItemClickListener != null) {
-                        onItemClickListener?.onItemClick(i, it)
-                    }
-                    if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-                        this.defChoicePosition = i
-                        if (onSingleCheckedChangeListener != null) {
-                            onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
+                if (onItemClickListener != null || onSingleCheckedChangeListener != null || onMultipleCheckedChangeListener != null) {
+                    childView.isClickable = true
+                    childView.isFocusable = true
+                    childView.setOnClickListener {
+                        changedCheckedItemView(i)
+                        if (onItemClickListener != null) {
+                            onItemClickListener?.onItemClick(i, it)
                         }
-                    } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
-                        if (onMultipleCheckedChangeListener != null) {
-                            onMultipleCheckedChangeListener?.onCheckedChanged(getCheckedList())
+                        if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
+                            this.defChoicePosition = i
+                            if (onSingleCheckedChangeListener != null) {
+                                onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
+                            }
+                        } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
+                            if (onMultipleCheckedChangeListener != null) {
+                                onMultipleCheckedChangeListener?.onCheckedChanged(getCheckedList())
+                            }
                         }
                     }
                 }
 
-                childView.setOnLongClickListener {
-                    if (onItemLongClickListener != null) {
-                        onItemLongClickListener?.onItemLongClick(i, it)
-                    }
-                    true
+                if (onItemLongClickListener != null) {
+                    childView.isClickable = true
+                    childView.isFocusable = true
+                    childView.setOnLongClickListener(OnLongClickListener { v ->
+                        onItemLongClickListener?.onItemLongClick(i, v)
+                        true
+                    })
                 }
             }
 
