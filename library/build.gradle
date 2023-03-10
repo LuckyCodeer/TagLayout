@@ -7,7 +7,7 @@ publish {
     userOrg = 'yanghongwei'
     groupId = 'com.yhw.library'
     artifactId = 'taglayout'
-    publishVersion = '1.0.1'
+    publishVersion = '1.0.2'
     repoName="TagLayout"
     desc = 'Android TagLayout'
     website = 'https://github.com/LuckyCodeer/TagLayout'
@@ -19,8 +19,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 102
+        versionName "1.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

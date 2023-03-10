@@ -18,21 +18,24 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_margin="10dp"
-            android:text="正常" />
+            android:text="正常"
+            android:background="@drawable/tag_selector_bg"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_margin="10dp"
-            android:text="单选" />
+            android:text="单选"
+            android:background="@drawable/tag_selector_bg"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_margin="10dp"
-            android:text="多选" />
+            android:text="多选"
+            android:background="@drawable/tag_selector_bg"/>
     </com.yhw.taglayout.TagLayout>
 
     <com.yhw.taglayout.TagLayout

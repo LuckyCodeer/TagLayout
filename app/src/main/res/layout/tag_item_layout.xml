@@ -5,6 +5,7 @@
     android:layout_margin="10dp"
     android:clickable="true"
     android:focusable="true"
+    android:background="@drawable/tag_selector_bg"
     android:orientation="vertical">
 
     <TextView

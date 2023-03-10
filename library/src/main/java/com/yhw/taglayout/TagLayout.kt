@@ -11,6 +11,9 @@ import kotlin.math.max
 
 private const val TAG = "TagLayout"
 
+/**
+ * 标签布局
+ */
 class TagLayout : ViewGroup {
     private val mViewRectList = mutableListOf<Rect>()
     private val mChildViewList = mutableListOf<View>()
@@ -84,9 +87,6 @@ class TagLayout : ViewGroup {
                 if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
                     if (i in 0 until childCount && i == defChoicePosition)
                         childView.isSelected = true
-                }
-                if (childView.background == null) {
-                    childView.setBackgroundResource(R.drawable.tag_selector_bg)
                 }
                 mChildViewList.add(childView)
                 val childLeft = lineWidth - childWidth + marginLayoutParams.leftMargin
@@ -198,6 +198,8 @@ class TagLayout : ViewGroup {
 
     private fun changedAdapter() {
         removeAllViews()
+        mChildViewList.clear()
+        mViewRectList.clear()
         for (i in 0 until mAdapter.getItemCount()) {
             val itemView = mAdapter.onCreateView(this)
             mAdapter.onBindView(itemView, i)

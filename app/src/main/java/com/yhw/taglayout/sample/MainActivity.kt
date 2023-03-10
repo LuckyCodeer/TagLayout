@@ -1,10 +1,9 @@
 package com.yhw.taglayout.sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -98,6 +97,18 @@ class MainActivity : AppCompatActivity() {
         override fun getItemCount(): Int {
             return dataList.size
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.list) {
+            startActivity(Intent(this, ListActivity::class.java))
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }
