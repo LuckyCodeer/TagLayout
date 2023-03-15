@@ -4,21 +4,22 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
+import android.view.WindowManager
 import kotlin.math.max
 
-private const val TAG = "TagLayout"
+private const val TAG = "TagLayout===>"
 
 /**
  * 标签布局
  * @author yhw
  */
 class TagLayout : ViewGroup {
-    private val mViewRectList = mutableListOf<Rect>()
-    private val mChildViewList = mutableListOf<View>()
+    private val mViewRectMap = mutableMapOf<View, Rect>()
     private var choiceMode = ChoiceMode.None.choiceMode //选择模式
     private var defChoicePosition: Int = 0 //单选时默认选中
     private lateinit var mAdapter: TagAdapter
@@ -26,6 +27,7 @@ class TagLayout : ViewGroup {
     var onItemLongClickListener: OnItemLongClickListener? = null
     var onSingleCheckedChangeListener: OnSingleCheckedChangeListener? = null
     var onMultipleCheckedChangeListener: OnMultipleCheckedChangeListener? = null
+    var mScreenWidth = 0 //屏幕宽度
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -38,6 +40,12 @@ class TagLayout : ViewGroup {
         choiceMode = ta.getInt(R.styleable.TagLayout_choiceMode, ChoiceMode.None.choiceMode)
         defChoicePosition = ta.getInt(R.styleable.TagLayout_defaultChoicePosition, 0)
         ta.recycle()
+
+        val windowManager = context
+            .getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        this.mScreenWidth = displayMetrics.widthPixels
     }
 
     @SuppressLint("DrawAllocation")
@@ -52,9 +60,8 @@ class TagLayout : ViewGroup {
         var height = 0 //最终父布局高度
         var lineWidth = 0 //行宽
         var lineHeight = 0 //行高
-
+        Log.i(TAG, "widthSize is $widthSize  widthMode is $widthMode mScreenWidth:${mScreenWidth}")
         measureChildren(widthMeasureSpec, heightMeasureSpec)
-
         for (i in 0 until childCount) {
             val childView = getChildAt(i)
             val marginLayoutParams: MarginLayoutParams =
@@ -83,54 +90,25 @@ class TagLayout : ViewGroup {
                 lineHeight = max(childHeight, lineHeight)
             }
 
-            if (!mChildViewList.contains(childView)) {
-                if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-                    if (i in 0 until childCount && i == defChoicePosition)
-                        childView.isSelected = true
-                }
-                mChildViewList.add(childView)
-                val childLeft = lineWidth - childWidth + marginLayoutParams.leftMargin
-                val childRight =
-                    lineWidth - childWidth + childWidth - marginLayoutParams.rightMargin
-                val childTop = height + marginLayoutParams.topMargin
-                val childBottom = height + childHeight - marginLayoutParams.bottomMargin
-                val rect = Rect(childLeft, childTop, childRight, childBottom)
-                Log.i(
-                    TAG, "onMeasure  left:${rect.left}  top:${rect.top} ," +
-                            "right:${rect.right} ,bottom:${rect.bottom}"
-                )
-                mViewRectList.add(rect)
-
-                if (onItemClickListener != null || onSingleCheckedChangeListener != null || onMultipleCheckedChangeListener != null) {
-                    childView.isClickable = true
-                    childView.isFocusable = true
-                    childView.setOnClickListener {
-                        changedCheckedItemView(i)
-                        if (onItemClickListener != null) {
-                            onItemClickListener?.onItemClick(i, it)
-                        }
-                        if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-                            this.defChoicePosition = i
-                            if (onSingleCheckedChangeListener != null) {
-                                onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
-                            }
-                        } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
-                            if (onMultipleCheckedChangeListener != null) {
-                                onMultipleCheckedChangeListener?.onCheckedChanged(getCheckedList())
-                            }
-                        }
-                    }
-                }
-
-                if (onItemLongClickListener != null) {
-                    childView.isClickable = true
-                    childView.isFocusable = true
-                    childView.setOnLongClickListener(OnLongClickListener { v ->
-                        onItemLongClickListener?.onItemLongClick(i, v)
-                        true
-                    })
-                }
+            if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
+                if (i in 0 until childCount && i == defChoicePosition)
+                    childView.isSelected = true
             }
+            val childLeft = lineWidth - childWidth + marginLayoutParams.leftMargin + paddingLeft
+            var childRight = childView.measuredWidth + childLeft
+            if (childRight > mScreenWidth) {
+                childRight = mScreenWidth - marginLayoutParams.rightMargin - paddingRight
+//                childRight = childView.measuredWidth
+            }
+            val childTop = height + marginLayoutParams.topMargin + paddingTop
+            val childBottom =
+                height + childHeight - marginLayoutParams.bottomMargin + paddingTop
+            val rect = Rect(childLeft, childTop, childRight, childBottom)
+            Log.i(
+                TAG, "onMeasure  left:${rect.left}  top:${rect.top} ," +
+                        "right:${rect.right} ,bottom:${rect.bottom}   measuredWidth:${childView.measuredWidth}"
+            )
+            mViewRectMap[childView] = rect
 
             //最后一行处理
             if (i == childCount - 1) {
@@ -138,17 +116,50 @@ class TagLayout : ViewGroup {
                 height += lineHeight
             }
         }
-        setMeasuredDimension(
-            if (widthMode == MeasureSpec.EXACTLY) widthSize else width,
-            if (heightMode == MeasureSpec.EXACTLY) heightSize else height
-        )
+        val measuredWidth =
+            if (widthMode == MeasureSpec.EXACTLY) widthSize else width + paddingLeft + paddingRight
+        val measuredHeight =
+            if (heightMode == MeasureSpec.EXACTLY) heightSize else height + paddingTop + paddingBottom
+        Log.i(TAG, "measuredWidth  :${measuredWidth}  measuredHeight:${measuredHeight}  width:${width} lineWidth:${lineWidth}")
+        setMeasuredDimension(max(measuredWidth, width), measuredHeight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        for (i in 0 until childCount) {
-            val childView = getChildAt(i)
-            val rect = mViewRectList[i]
+        Log.i(TAG, "=========onLayout========== $changed  $l  $t  $r  $b")
+        var i = 0
+        for ((childView, rect) in mViewRectMap) {
             childView.layout(rect.left, rect.top, rect.right, rect.bottom)
+            if (onItemClickListener != null || onSingleCheckedChangeListener != null || onMultipleCheckedChangeListener != null) {
+                childView.isClickable = true
+                childView.isFocusable = true
+                val position = i
+                childView.setOnClickListener {
+                    changedCheckedItemView(position)
+                    if (onItemClickListener != null) {
+                        onItemClickListener?.onItemClick(position, it)
+                    }
+                    if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
+                        this.defChoicePosition = position
+                        if (onSingleCheckedChangeListener != null) {
+                            onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
+                        }
+                    } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
+                        if (onMultipleCheckedChangeListener != null) {
+                            onMultipleCheckedChangeListener?.onCheckedChanged(getCheckedList())
+                        }
+                    }
+                }
+            }
+
+            if (onItemLongClickListener != null) {
+                childView.isClickable = true
+                childView.isFocusable = true
+                childView.setOnLongClickListener(OnLongClickListener { v ->
+                    onItemLongClickListener?.onItemLongClick(i, v)
+                    true
+                })
+            }
+            i++
         }
     }
 
@@ -157,7 +168,8 @@ class TagLayout : ViewGroup {
      */
     private fun changedCheckedItemView(position: Int) {
         Log.i(TAG, "choiceMode is $choiceMode")
-        for ((index, view) in mChildViewList.withIndex()) {
+        var index = 0
+        for ((view, _) in mViewRectMap) {
             if (position == -1) {
                 view.isSelected = false
                 continue
@@ -171,6 +183,7 @@ class TagLayout : ViewGroup {
             } else {
                 view.isSelected = false
             }
+            index++
         }
     }
 
@@ -179,10 +192,12 @@ class TagLayout : ViewGroup {
      */
     fun getCheckedList(): MutableList<Int> {
         val checkedList = mutableListOf<Int>()
-        for ((index, view) in mChildViewList.withIndex()) {
+        var index = 0
+        for ((view, _) in mViewRectMap) {
             if (view.isSelected) {
                 checkedList.add(index)
             }
+            index++
         }
         return checkedList
     }
@@ -204,8 +219,7 @@ class TagLayout : ViewGroup {
 
     private fun changedAdapter() {
         removeAllViews()
-        mChildViewList.clear()
-        mViewRectList.clear()
+        mViewRectMap.clear()
         for (i in 0 until mAdapter.getItemCount()) {
             val itemView = mAdapter.onCreateView(this)
             mAdapter.onBindView(itemView, i)

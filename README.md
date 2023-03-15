@@ -12,7 +12,7 @@ allprojects {
 	}
 
 dependencies {
-            implementation 'com.github.LuckyCodeer:TagLayout:1.0.4'
+            implementation 'com.github.LuckyCodeer:TagLayout:1.0.5'
 	}
 ```
 

@@ -16,47 +16,47 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_margin="10dp"
-            android:text="正常"
-            android:background="@drawable/tag_selector_bg"/>
+            android:background="@drawable/tag_selector_bg"
+            android:padding="10dp"
+            android:text="正常" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_margin="10dp"
-            android:text="单选"
-            android:background="@drawable/tag_selector_bg"/>
+            android:background="@drawable/tag_selector_bg"
+            android:padding="10dp"
+            android:text="单选" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_margin="10dp"
-            android:text="多选"
-            android:background="@drawable/tag_selector_bg"/>
+            android:background="@drawable/tag_selector_bg"
+            android:padding="10dp"
+            android:text="多选" />
     </com.yhw.taglayout.TagLayout>
 
     <com.yhw.taglayout.TagLayout
         android:id="@+id/tag_layout_2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:defaultChoicePosition="0"
-        app:choiceMode="none" />
+        app:choiceMode="none"
+        app:defaultChoicePosition="0" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:layout_marginTop="20dp">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_get_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="获取选中项"/>
+            android:text="获取选中项" />
 
     </LinearLayout>
 
