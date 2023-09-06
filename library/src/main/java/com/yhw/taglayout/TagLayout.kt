@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.view.WindowManager
 import kotlin.math.max
@@ -135,9 +134,16 @@ class TagLayout : ViewGroup {
         var i = 0
         for ((childView, rect) in mViewRectMap) {
             childView.layout(rect.left, rect.top, rect.right, rect.bottom)
-            childView.isClickable = true
-            childView.isFocusable = true
-            val position = i
+            setItemListener(childView, i)
+            i++
+        }
+    }
+
+    /**
+     * 给子view设置点击事件
+     */
+    private fun setItemListener(childView: View, position: Int) {
+        if (choiceMode != ChoiceMode.None.choiceMode || (onItemClickListener != null || onItemLongClickListener != null)) {
             childView.setOnClickListener {
                 changedCheckedItemView(position)
                 if (onItemClickListener != null) {
@@ -160,14 +166,11 @@ class TagLayout : ViewGroup {
             }
 
             if (onItemLongClickListener != null) {
-                childView.isClickable = true
-                childView.isFocusable = true
                 childView.setOnLongClickListener { v ->
-                    onItemLongClickListener?.onItemLongClick(i, v)
+                    onItemLongClickListener?.onItemLongClick(position, v)
                     true
                 }
             }
-            i++
         }
     }
 
@@ -261,6 +264,11 @@ class TagLayout : ViewGroup {
             }
         } else {
             changedCheckedItemView(-1)
+        }
+        var i = 0
+        for ((childView, _) in mViewRectMap) {
+            setItemListener(childView, i)
+            i++
         }
     }
 
