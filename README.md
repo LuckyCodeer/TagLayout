@@ -3,16 +3,15 @@ Android上的标签布局、流式布局，支持单选、多选等操作
 
 ### 引入依赖
 
-```kotlin
+```groovy
 allprojects {
 		repositories {
-			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
 
 dependencies {
-            implementation 'com.github.LuckyCodeer:TagLayout:1.0.5'
+            implementation 'com.github.LuckyCodeer:TagLayout:1.0.6'
 	}
 ```
 
@@ -61,6 +60,7 @@ dependencies {
 ##### 布局属性
 1. app:defaultChoicePosition="0" //单选时默认选中项
 2. app:choiceMode="none" //设置选择模式，支持单选(singleChoice)和多选(multipleChoice) 默认(none)表示不设置选择模式
+3. app:singleChoiceSupportCancel="false" //单选支持取消已选中项，默认为false
 
 
 #### 动态添加数据
@@ -102,6 +102,7 @@ tagLayout2.onMultipleCheckedChangeListener =
 //获取选中项
 getIndexBtn.setOnClickListener{
     if(tagLayout2.getChoiceMode() == TagLayout.ChoiceMode.SingleChoice.choiceMode){
+        //tagLayout2.getCheckedPosition() 返回-1代表未选中任何选项
         Toast.makeText(this@MainActivity, "单选了 ${tagLayout2.getCheckedPosition()}", Toast.LENGTH_SHORT).show()
     }else if(tagLayout2.getChoiceMode() == TagLayout.ChoiceMode.MultipleChoice.choiceMode){
         Toast.makeText(this@MainActivity, "多选了 ${tagLayout2.getCheckedList()}", Toast.LENGTH_SHORT).show()

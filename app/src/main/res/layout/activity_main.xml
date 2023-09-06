@@ -36,6 +36,7 @@
             android:background="@drawable/tag_selector_bg"
             android:padding="10dp"
             android:text="多选" />
+
     </com.yhw.taglayout.TagLayout>
 
     <com.yhw.taglayout.TagLayout
@@ -43,7 +44,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:choiceMode="none"
-        app:defaultChoicePosition="0" />
+        app:defaultChoicePosition="0"
+        app:singleChoiceSupportCancel="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"

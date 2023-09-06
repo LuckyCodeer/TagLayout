@@ -12,5 +12,7 @@
 
         <!--单选时默认选择项-->
         <attr name="defaultChoicePosition" format="integer"/>
+        <!--单选支持取消-->
+        <attr name="singleChoiceSupportCancel" format="boolean"/>
     </declare-styleable>
 </resources>

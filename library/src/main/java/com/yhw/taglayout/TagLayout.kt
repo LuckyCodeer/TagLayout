@@ -27,7 +27,8 @@ class TagLayout : ViewGroup {
     var onItemLongClickListener: OnItemLongClickListener? = null
     var onSingleCheckedChangeListener: OnSingleCheckedChangeListener? = null
     var onMultipleCheckedChangeListener: OnMultipleCheckedChangeListener? = null
-    var mScreenWidth = 0 //屏幕宽度
+    private var mScreenWidth = 0 //屏幕宽度
+    private var mSingleChoiceSupportCancel = false //单选是否支持取消
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -39,6 +40,7 @@ class TagLayout : ViewGroup {
         val ta = context.obtainStyledAttributes(attrs, R.styleable.TagLayout)
         choiceMode = ta.getInt(R.styleable.TagLayout_choiceMode, ChoiceMode.None.choiceMode)
         defChoicePosition = ta.getInt(R.styleable.TagLayout_defaultChoicePosition, 0)
+        mSingleChoiceSupportCancel = ta.getBoolean(R.styleable.TagLayout_singleChoiceSupportCancel, false)
         ta.recycle()
 
         val windowManager = context
@@ -139,7 +141,11 @@ class TagLayout : ViewGroup {
                         onItemClickListener?.onItemClick(position, it)
                     }
                     if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-                        this.defChoicePosition = position
+                        if (it.isSelected) {
+                            this.defChoicePosition = position
+                        } else {
+                            this.defChoicePosition = -1
+                        }
                         if (onSingleCheckedChangeListener != null) {
                             onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
                         }
@@ -154,10 +160,10 @@ class TagLayout : ViewGroup {
             if (onItemLongClickListener != null) {
                 childView.isClickable = true
                 childView.isFocusable = true
-                childView.setOnLongClickListener(OnLongClickListener { v ->
+                childView.setOnLongClickListener { v ->
                     onItemLongClickListener?.onItemLongClick(i, v)
                     true
-                })
+                }
             }
             i++
         }
@@ -175,7 +181,15 @@ class TagLayout : ViewGroup {
                 continue
             }
             if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-                view.isSelected = index == position
+                if (mSingleChoiceSupportCancel) {
+                    if (index == position) {
+                        view.isSelected = !view.isSelected
+                    } else {
+                        view.isSelected = false
+                    }
+                } else {
+                    view.isSelected = index == position
+                }
             } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
                 if (index == position) {
                     view.isSelected = !view.isSelected
