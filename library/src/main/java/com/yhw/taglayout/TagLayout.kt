@@ -40,7 +40,8 @@ class TagLayout : ViewGroup {
         val ta = context.obtainStyledAttributes(attrs, R.styleable.TagLayout)
         choiceMode = ta.getInt(R.styleable.TagLayout_choiceMode, ChoiceMode.None.choiceMode)
         defChoicePosition = ta.getInt(R.styleable.TagLayout_defaultChoicePosition, 0)
-        mSingleChoiceSupportCancel = ta.getBoolean(R.styleable.TagLayout_singleChoiceSupportCancel, false)
+        mSingleChoiceSupportCancel =
+            ta.getBoolean(R.styleable.TagLayout_singleChoiceSupportCancel, false)
         ta.recycle()
 
         val windowManager = context
@@ -122,7 +123,10 @@ class TagLayout : ViewGroup {
             if (widthMode == MeasureSpec.EXACTLY) widthSize else width + paddingLeft + paddingRight
         val measuredHeight =
             if (heightMode == MeasureSpec.EXACTLY) heightSize else height + paddingTop + paddingBottom
-        Log.i(TAG, "measuredWidth  :${measuredWidth}  measuredHeight:${measuredHeight}  width:${width} lineWidth:${lineWidth}")
+        Log.i(
+            TAG,
+            "measuredWidth  :${measuredWidth}  measuredHeight:${measuredHeight}  width:${width} lineWidth:${lineWidth}"
+        )
         setMeasuredDimension(max(measuredWidth, width), measuredHeight)
     }
 
@@ -131,28 +135,26 @@ class TagLayout : ViewGroup {
         var i = 0
         for ((childView, rect) in mViewRectMap) {
             childView.layout(rect.left, rect.top, rect.right, rect.bottom)
-            if (onItemClickListener != null || onSingleCheckedChangeListener != null || onMultipleCheckedChangeListener != null) {
-                childView.isClickable = true
-                childView.isFocusable = true
-                val position = i
-                childView.setOnClickListener {
-                    changedCheckedItemView(position)
-                    if (onItemClickListener != null) {
-                        onItemClickListener?.onItemClick(position, it)
+            childView.isClickable = true
+            childView.isFocusable = true
+            val position = i
+            childView.setOnClickListener {
+                changedCheckedItemView(position)
+                if (onItemClickListener != null) {
+                    onItemClickListener?.onItemClick(position, it)
+                }
+                if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
+                    if (it.isSelected) {
+                        this.defChoicePosition = position
+                    } else {
+                        this.defChoicePosition = -1
                     }
-                    if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
-                        if (it.isSelected) {
-                            this.defChoicePosition = position
-                        } else {
-                            this.defChoicePosition = -1
-                        }
-                        if (onSingleCheckedChangeListener != null) {
-                            onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
-                        }
-                    } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
-                        if (onMultipleCheckedChangeListener != null) {
-                            onMultipleCheckedChangeListener?.onCheckedChanged(getCheckedList())
-                        }
+                    if (onSingleCheckedChangeListener != null) {
+                        onSingleCheckedChangeListener?.onCheckedChanged(defChoicePosition)
+                    }
+                } else if (choiceMode == ChoiceMode.MultipleChoice.choiceMode) {
+                    if (onMultipleCheckedChangeListener != null) {
+                        onMultipleCheckedChangeListener?.onCheckedChanged(getCheckedList())
                     }
                 }
             }
