@@ -298,6 +298,13 @@ class TagLayout : ViewGroup {
         return MarginLayoutParams(p)
     }
 
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        for ((childView, _) in mViewRectMap) {
+            childView.isEnabled = enabled
+        }
+    }
+
     interface OnItemClickListener {
         fun onItemClick(position: Int, view: View)
     }
