@@ -110,6 +110,7 @@ class TagLayout : ViewGroup {
                 TAG, "onMeasure  left:${rect.left}  top:${rect.top} ," +
                         "right:${rect.right} ,bottom:${rect.bottom}   measuredWidth:${childView.measuredWidth}"
             )
+            childView.isEnabled = isEnabled
             mViewRectMap[childView] = rect
 
             //最后一行处理
