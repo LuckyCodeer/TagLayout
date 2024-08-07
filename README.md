@@ -11,7 +11,7 @@ allprojects {
 	}
 
 dependencies {
-            implementation 'com.github.LuckyCodeer:TagLayout:1.0.9'
+            implementation 'com.github.LuckyCodeer:TagLayout:1.1.0'
 	}
 ```
 
@@ -54,13 +54,15 @@ dependencies {
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:defaultChoicePosition="0"
-        app:choiceMode="none" />
+        app:choiceMode="none"
+        app:gravity="left"/>
 ```
 
 ##### 布局属性
 1. app:defaultChoicePosition="0" //单选时默认选中项
 2. app:choiceMode="none" //设置选择模式，支持单选(singleChoice)和多选(multipleChoice) 默认(none)表示不设置选择模式
 3. app:singleChoiceSupportCancel="false" //单选支持取消已选中项，默认为false
+4. app:gravity="left" //对齐方式，支持 left、center、right，默认为left
 
 
 #### 动态添加数据

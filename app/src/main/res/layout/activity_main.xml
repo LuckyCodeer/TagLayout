@@ -9,7 +9,7 @@
 
     <com.yhw.taglayout.TagLayout
         android:id="@+id/tag_layout_1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:choiceMode="singleChoice">
 
@@ -43,6 +43,7 @@
         android:id="@+id/tag_layout_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:gravity="left"
         app:choiceMode="none"
         app:defaultChoicePosition="0"
         app:singleChoiceSupportCancel="true"/>

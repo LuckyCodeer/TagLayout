@@ -2,7 +2,6 @@ package com.yhw.taglayout
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
@@ -18,7 +17,8 @@ private const val TAG = "TagLayout===>"
  * @author yhw
  */
 class TagLayout : ViewGroup {
-    private val mViewRectMap = mutableMapOf<View, Rect>()
+    private val mViewRectMap = mutableMapOf<View, MyRect>()
+    private val mLineWidthMap = mutableMapOf<Int, Int>() //存放行数和距离右侧的宽度
     private var choiceMode = ChoiceMode.None.choiceMode //选择模式
     private var defChoicePosition: Int = 0 //单选时默认选中
     private lateinit var mAdapter: TagAdapter
@@ -28,6 +28,8 @@ class TagLayout : ViewGroup {
     var onMultipleCheckedChangeListener: OnMultipleCheckedChangeListener? = null
     private var mScreenWidth = 0 //屏幕宽度
     private var mSingleChoiceSupportCancel = false //单选是否支持取消
+    private var mMeasuredWidth = 0 //控件宽度
+    private var mGravity = 0 //对齐方式
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -41,6 +43,7 @@ class TagLayout : ViewGroup {
         defChoicePosition = ta.getInt(R.styleable.TagLayout_defaultChoicePosition, 0)
         mSingleChoiceSupportCancel =
             ta.getBoolean(R.styleable.TagLayout_singleChoiceSupportCancel, false)
+        mGravity = ta.getInt(R.styleable.TagLayout_gravity, GravityMode.Left.gravity)
         ta.recycle()
 
         val windowManager = context
@@ -63,6 +66,7 @@ class TagLayout : ViewGroup {
         var lineWidth = 0 //行宽
         var lineHeight = 0 //行高
         Log.i(TAG, "widthSize is $widthSize  widthMode is $widthMode mScreenWidth:${mScreenWidth}")
+        var lineNum = 0 //行数
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         for (i in 0 until childCount) {
             val childView = getChildAt(i)
@@ -77,6 +81,7 @@ class TagLayout : ViewGroup {
 
             //判断是否需要换行
             if (lineWidth + childWidth > widthSize - paddingLeft - paddingRight) {
+                lineNum ++
                 //记录所有行中宽度最大的行
                 width = max(width, lineWidth)
                 //换行后重置行宽为第一个view的宽度
@@ -91,7 +96,9 @@ class TagLayout : ViewGroup {
                 //记录每行view中高度最高的view为当前行高
                 lineHeight = max(childHeight, lineHeight)
             }
-
+            Log.i(TAG, "lineCount============ $lineNum")
+            val srcLineWidth = if (mLineWidthMap[lineNum] != null) mLineWidthMap[lineNum]!! else 0
+            mLineWidthMap[lineNum] = max(lineWidth, srcLineWidth)
             if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
                 if (i in 0 until childCount && i == defChoicePosition)
                     childView.isSelected = true
@@ -105,7 +112,8 @@ class TagLayout : ViewGroup {
             val childTop = height + marginLayoutParams.topMargin + paddingTop
             val childBottom =
                 height + childHeight - marginLayoutParams.bottomMargin + paddingTop
-            val rect = Rect(childLeft, childTop, childRight, childBottom)
+            val rect = MyRect(childLeft, childTop, childRight, childBottom)
+            rect.lineNum = lineNum
             Log.i(
                 TAG, "onMeasure  left:${rect.left}  top:${rect.top} ," +
                         "right:${rect.right} ,bottom:${rect.bottom}   measuredWidth:${childView.measuredWidth}"
@@ -119,22 +127,34 @@ class TagLayout : ViewGroup {
                 height += lineHeight
             }
         }
-        val measuredWidth =
+        mMeasuredWidth =
             if (widthMode == MeasureSpec.EXACTLY) widthSize else width + paddingLeft + paddingRight
         val measuredHeight =
             if (heightMode == MeasureSpec.EXACTLY) heightSize else height + paddingTop + paddingBottom
         Log.i(
             TAG,
-            "measuredWidth  :${measuredWidth}  measuredHeight:${measuredHeight}  width:${width} lineWidth:${lineWidth}"
+            "measuredWidth  :${mMeasuredWidth}  measuredHeight:${measuredHeight}  width:${width} lineWidth:${lineWidth}"
         )
-        setMeasuredDimension(max(measuredWidth, width), measuredHeight)
+
+        setMeasuredDimension(max(mMeasuredWidth, width), measuredHeight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         Log.i(TAG, "=========onLayout========== $changed  $l  $t  $r  $b")
         var i = 0
         for ((childView, rect) in mViewRectMap) {
-            childView.layout(rect.left, rect.top, rect.right, rect.bottom)
+            val lineRightWidth = mLineWidthMap[rect.lineNum]
+            var moveGap = 0
+            if (mGravity == GravityMode.RIGHT.gravity) {
+                if (lineRightWidth != null && lineRightWidth > 0) {
+                    moveGap = mMeasuredWidth - lineRightWidth
+                }
+            } else if (mGravity == GravityMode.CENTER.gravity) {
+                if (lineRightWidth != null && lineRightWidth > 0) {
+                    moveGap = (mMeasuredWidth - lineRightWidth) / 2
+                }
+            }
+            childView.layout(rect.left + moveGap, rect.top, rect.right + moveGap, rect.bottom)
             setItemListener(childView, i)
             i++
         }
@@ -322,6 +342,9 @@ class TagLayout : ViewGroup {
         fun onCheckedChanged(positionList: MutableList<Int>)
     }
 
+    /**
+     * 选择模式
+     */
     enum class ChoiceMode(var choiceMode: Int) {
         /**
          * 非选择模式
@@ -337,5 +360,25 @@ class TagLayout : ViewGroup {
          * 多选模式
          */
         MultipleChoice(2);
+    }
+
+    /**
+     * 对齐方式
+     */
+    enum class GravityMode(var gravity: Int) {
+        /**
+         * 居左对齐
+         */
+        Left(0),
+
+        /**
+         * 居中对齐
+         */
+        CENTER(1),
+
+        /**
+         * 居右对齐
+         */
+        RIGHT(2);
     }
 }
