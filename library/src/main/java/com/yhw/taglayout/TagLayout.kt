@@ -30,6 +30,7 @@ class TagLayout : ViewGroup {
     private var mSingleChoiceSupportCancel = false //单选是否支持取消
     private var mMeasuredWidth = 0 //控件宽度
     private var mGravity = 0 //对齐方式
+    private var mMaxLines = -1 //默认最大显示行数
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -44,6 +45,7 @@ class TagLayout : ViewGroup {
         mSingleChoiceSupportCancel =
             ta.getBoolean(R.styleable.TagLayout_singleChoiceSupportCancel, false)
         mGravity = ta.getInt(R.styleable.TagLayout_gravity, GravityMode.Left.gravity)
+        mMaxLines = ta.getInt(R.styleable.TagLayout_maxLines, -1)
         ta.recycle()
 
         val windowManager = context
@@ -69,6 +71,9 @@ class TagLayout : ViewGroup {
         var lineNum = 0 //行数
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         for (i in 0 until childCount) {
+            if (mMaxLines != -1 && lineNum + 1 > mMaxLines) {
+                break
+            }
             val childView = getChildAt(i)
             val marginLayoutParams: MarginLayoutParams =
                 childView.layoutParams as MarginLayoutParams
@@ -324,6 +329,14 @@ class TagLayout : ViewGroup {
         for ((childView, _) in mViewRectMap) {
             childView.isEnabled = enabled
         }
+    }
+
+    /**
+     * 展示全部
+     */
+    fun showAll() {
+        mMaxLines = -1
+        requestLayout()
     }
 
     interface OnItemClickListener {

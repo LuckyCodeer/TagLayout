@@ -23,5 +23,7 @@
             <!-- 居右对齐 -->
             <enum name="right" value="2" />
         </attr>
+        <!--默认最大显示行数-->
+        <attr name="maxLines" format="integer"/>
     </declare-styleable>
 </resources>
