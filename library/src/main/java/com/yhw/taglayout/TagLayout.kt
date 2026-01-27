@@ -332,11 +332,18 @@ class TagLayout : ViewGroup {
     }
 
     /**
+     * 设置最大行数
+     */
+    fun setMaxLines(maxLines: Int) {
+        this.mMaxLines = maxLines
+        requestLayout()
+    }
+
+    /**
      * 展示全部
      */
     fun showAll() {
-        mMaxLines = -1
-        requestLayout()
+        setMaxLines(-1)
     }
 
     interface OnItemClickListener {
