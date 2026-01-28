@@ -31,6 +31,7 @@ class TagLayout : ViewGroup {
     private var mMeasuredWidth = 0 //控件宽度
     private var mGravity = 0 //对齐方式
     private var mMaxLines = -1 //默认最大显示行数
+    private var mLines = 0 //总行数
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -71,9 +72,6 @@ class TagLayout : ViewGroup {
         var lineNum = 0 //行数
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         for (i in 0 until childCount) {
-            if (mMaxLines != -1 && lineNum + 1 > mMaxLines) {
-                break
-            }
             val childView = getChildAt(i)
             val marginLayoutParams: MarginLayoutParams =
                 childView.layoutParams as MarginLayoutParams
@@ -95,12 +93,18 @@ class TagLayout : ViewGroup {
                 height += lineHeight
                 //换行后行高重置为第一个view的高度
                 lineHeight = childHeight
+
+                //限制最大行数
+                if (mMaxLines != -1 && lineNum + 1 > mMaxLines) {
+                    break
+                }
             } else {
                 //宽度累加
                 lineWidth += childWidth
                 //记录每行view中高度最高的view为当前行高
                 lineHeight = max(childHeight, lineHeight)
             }
+            mLines = lineNum
             Log.i(TAG, "lineCount============ $lineNum")
             val srcLineWidth = if (mLineWidthMap[lineNum] != null) mLineWidthMap[lineNum]!! else 0
             mLineWidthMap[lineNum] = max(lineWidth, srcLineWidth)
@@ -329,6 +333,20 @@ class TagLayout : ViewGroup {
         for ((childView, _) in mViewRectMap) {
             childView.isEnabled = enabled
         }
+    }
+
+    /**
+     * 获取总行数
+     */
+    fun getLines(): Int {
+        return mLines + 1
+    }
+
+    /**
+     * 获取显示的item数量
+     */
+    fun getShowItemSize(): Int {
+        return mViewRectMap.size
     }
 
     /**
