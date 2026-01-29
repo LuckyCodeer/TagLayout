@@ -39,14 +39,28 @@
 
     </com.yhw.taglayout.TagLayout>
 
-    <com.yhw.taglayout.TagLayout
-        android:id="@+id/tag_layout_2"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:gravity="left"
-        app:choiceMode="none"
-        app:defaultChoicePosition="0"
-        app:singleChoiceSupportCancel="true"/>
+        android:orientation="horizontal">
+
+        <com.yhw.taglayout.TagLayout
+            android:id="@+id/tag_layout_2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            app:gravity="left"
+            app:choiceMode="none"
+            app:defaultChoicePosition="0"
+            app:singleChoiceSupportCancel="true"/>
+
+        <Button
+            android:id="@+id/btn_expand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="展开"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

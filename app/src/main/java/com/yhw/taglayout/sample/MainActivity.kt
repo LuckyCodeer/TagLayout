@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         val tagLayout1 = findViewById<TagLayout>(R.id.tag_layout_1)
         val tagLayout2 = findViewById<TagLayout>(R.id.tag_layout_2)
         val getIndexBtn = findViewById<Button>(R.id.btn_get_index)
+        val expandBtn = findViewById<Button>(R.id.btn_expand)
 
         tagLayout1.onItemClickListener = object : TagLayout.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
@@ -79,6 +80,18 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             } else {
                 Toast.makeText(this@MainActivity, "非选中模式，不能获取", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        var isExpand = false
+        expandBtn.setOnClickListener {
+            Log.i(TAG, "getLines: ${tagLayout2.getLines()}")
+            if (isExpand) {
+                isExpand = false
+                tagLayout2.setMaxLines(1)
+            } else {
+                isExpand = true
+                tagLayout2.showAll()
             }
         }
     }

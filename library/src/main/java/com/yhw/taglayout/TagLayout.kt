@@ -32,6 +32,7 @@ class TagLayout : ViewGroup {
     private var mGravity = 0 //对齐方式
     private var mMaxLines = -1 //默认最大显示行数
     private var mLines = 0 //总行数
+    private var mMaxHeight = 0 //限制最大显示行数时的最大高度
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -85,6 +86,7 @@ class TagLayout : ViewGroup {
             //判断是否需要换行
             if (lineWidth + childWidth > widthSize - paddingLeft - paddingRight) {
                 lineNum ++
+                Log.i(TAG, "lineWidth is $lineWidth  lineHeight is $lineHeight")
                 //记录所有行中宽度最大的行
                 width = max(width, lineWidth)
                 //换行后重置行宽为第一个view的宽度
@@ -93,11 +95,11 @@ class TagLayout : ViewGroup {
                 height += lineHeight
                 //换行后行高重置为第一个view的高度
                 lineHeight = childHeight
-
                 //限制最大行数
-                if (mMaxLines != -1 && lineNum + 1 > mMaxLines) {
-                    break
-                }
+                Log.i(TAG, "mMaxLines============ $lineNum   $mMaxLines")
+                 if (mMaxLines != -1 && lineNum == mMaxLines) {
+                     mMaxHeight = height
+                 }
             } else {
                 //宽度累加
                 lineWidth += childWidth
@@ -105,7 +107,6 @@ class TagLayout : ViewGroup {
                 lineHeight = max(childHeight, lineHeight)
             }
             mLines = lineNum
-            Log.i(TAG, "lineCount============ $lineNum")
             val srcLineWidth = if (mLineWidthMap[lineNum] != null) mLineWidthMap[lineNum]!! else 0
             mLineWidthMap[lineNum] = max(lineWidth, srcLineWidth)
             if (choiceMode == ChoiceMode.SingleChoice.choiceMode) {
@@ -135,6 +136,7 @@ class TagLayout : ViewGroup {
                 width = max(lineWidth, width)
                 height += lineHeight
             }
+            Log.i(TAG, "lineCount============ $lineNum   $mMaxHeight")
         }
         mMeasuredWidth =
             if (widthMode == MeasureSpec.EXACTLY) widthSize else width + paddingLeft + paddingRight
@@ -145,7 +147,7 @@ class TagLayout : ViewGroup {
             "measuredWidth  :${mMeasuredWidth}  measuredHeight:${measuredHeight}  width:${width} lineWidth:${lineWidth}"
         )
 
-        setMeasuredDimension(max(mMeasuredWidth, width), measuredHeight)
+        setMeasuredDimension(max(mMeasuredWidth, width), if (mMaxHeight == 0) measuredHeight else mMaxHeight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -354,6 +356,7 @@ class TagLayout : ViewGroup {
      */
     fun setMaxLines(maxLines: Int) {
         this.mMaxLines = maxLines
+        this.mMaxHeight = 0
         requestLayout()
     }
 
